@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  db:
+    image: mariadb
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    environment:
+      - MYSQL_ROOT_PASSWORD=
+    volumes:
+      - :/var/lib/mysql
+    env_file:
+      - db.env
+
+  app:
+    build:
+      context: ./apache
+      args:
+        CONTRY_CODE: ""
+        STATE: ""
+        LOCATION: ""
+        ORGANISATION: ""
+        ORGANIZATIONAL_UNIT: ""
+        COMMON_NAME: ""
+    ports:
+      - 8080:443
+    environment:
+      - MYSQL_HOST=db
+    env_file:
+      - db.env
+    volumes:
+      - :/var/www/html
+    depends_on:
+      - db
